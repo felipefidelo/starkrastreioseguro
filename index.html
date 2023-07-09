@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Teste de Rastreamento</title>
+  <style>
+   body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .form-group input[type="text"] {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .form-group button {
+      padding: 8px 16px;
+      font-size: 16px;
+      color: #fff;
+      background-color: #333;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .form-group button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Teste de Rastreamento</h1>
+    <div class="form-group">
+      <label for="idRastreamento">ID de Rastreamento:</label>
+      <input type="text" id="idRastreamento" placeholder="Digite o ID de rastreamento">
+    </div>
+    <div class="form-group">
+      <button onclick="testarRastreamento()">Rastrear</button>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    function rastrear(id) {
+      return new Promise((resolve, reject) => {
+        axios.get('https://www.linkcorreios.com.br/?id=' + id)
+          .then(response => {
+            const $ = cheerio.load(response.data);
+            const breners = [];
+            let info = $('ul.linha_status.m-0').find('li').text().trim();
+            let infopro = $('ul.linha_status').find('li').text().trim();
+            breners.push({ info, infopro });
+            resolve(breners);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      });
+    }
+
+    function testarRastreamento() {
+      const idRastreamento = document.getElementById('idRastreamento').value;
+      rastrear(idRastreamento)
+        .then(result => {
+          console.log(result);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  </script>
+</body>
+</html>
